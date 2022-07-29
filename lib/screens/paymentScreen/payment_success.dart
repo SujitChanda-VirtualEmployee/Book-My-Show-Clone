@@ -10,6 +10,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -57,6 +58,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   int bookASmileFees = 0;
   ScreenshotController screenshotController = ScreenshotController();
   Uint8List? _imageFile;
+  List<String> ticketNumbers = [];
   @override
   void initState() {
     calculateAmount();
@@ -68,6 +70,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   calculateAmount() {
     for (int i = 0; i < widget.chairList.length; i++) {
       subtotalAmount = subtotalAmount + widget.chairList[i].price;
+      ticketNumbers.add(widget.chairList[i].id);
     }
     gst = (18 / 100) * subtotalAmount;
     baseAmount = (10 / 100) * subtotalAmount;
@@ -201,7 +204,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   Container(
                     height: SizeConfig.heightMultiplier * 150,
                     padding: const EdgeInsets.only(
-                        top: 10, bottom: 10, left: 10, right: 15),
+                        top: 10, bottom: 10, left: 10, right: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -297,25 +300,19 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                             )
                           ]),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(widget.chairList.length.toString(),
-                                style: CustomStyleClass
-                                    .onboardingSkipButtonStyle
-                                    .copyWith(
-                                  color: ColorPalette.secondary,
-                                )),
-                            Text("\nM-Ticket",
-                                style: CustomStyleClass.onboardingBodyTextStyle
-                                    .copyWith(
-                                        color: ColorPalette.primary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize:
-                                            SizeConfig.textMultiplier * 1.5)),
-                          ],
-                        )
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        RotatedBox(
+                          quarterTurns: -1,
+                          child: Text("\nM-Ticket",
+                              style: CustomStyleClass.onboardingBodyTextStyle
+                                  .copyWith(
+                                      color: ColorPalette.primary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          SizeConfig.textMultiplier * 1.5)),
+                        ),
                       ],
                     ),
                   ),
@@ -323,11 +320,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                     height: SizeConfig.heightMultiplier * 10,
                   ),
                   halfCircleDivider(),
-                  contactDetailsSection(),
-                  const MySeparator(
-                    height: 1.5,
-                    color: ColorPalette.background,
-                  ),
+                  bookingDetailsSection(),
                   SizedBox(
                     height: SizeConfig.heightMultiplier * 10,
                   ),
@@ -419,72 +412,88 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
     );
   }
 
-  Widget contactDetailsSection() {
+  Widget bookingDetailsSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(
-          height: SizeConfig.heightMultiplier * 8,
-        ),
-        Text(
-          'Contact Details',
-          style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-              color: ColorPalette.secondary,
-              fontWeight: FontWeight.bold,
-              fontSize: SizeConfig.textMultiplier * 1.8),
-        ),
-        const Divider(
-          color: ColorPalette.background,
-          thickness: 1,
-          height: 15,
-        ),
-        Text(
-          preferences!.getString("_userName")!,
-          style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-              color: ColorPalette.secondary,
-              fontWeight: FontWeight.bold,
-              fontSize: SizeConfig.textMultiplier * 1.5),
-        ),
-        SizedBox(
-          height: SizeConfig.heightMultiplier * 8,
-        ),
-        Text(
-          preferences!.getString("_userEmail")!,
-          style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-              color: ColorPalette.secondary,
-              fontSize: SizeConfig.textMultiplier * 1.5),
-        ),
-        SizedBox(
-          height: SizeConfig.heightMultiplier * 8,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+      height: SizeConfig.heightMultiplier * 150,
+      width: SizeConfig.fullWidth,
+      decoration: BoxDecoration(
+          color: ColorPalette.dark.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
           children: [
-            Text(
-              preferences!.getString("_userPhone")!,
-              maxLines: 1,
-              style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-                  color: ColorPalette.secondary,
-                  fontSize: SizeConfig.textMultiplier * 1.5),
+            Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                  color: ColorPalette.white,
+                  borderRadius: BorderRadius.circular(10)),
+              height: SizeConfig.heightMultiplier * 130,
+              width: SizeConfig.heightMultiplier * 130,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: PrettyQr(
+                  image: const AssetImage(AssetImageClass.appLogo),
+                  typeNumber: 3,
+                  size: 200,
+                  data: 'BMS_20220001',
+                  errorCorrectLevel: QrErrorCorrectLevel.M,
+                  roundEdges: true,
+                ),
+              ),
             ),
-            Consumer<LocationProvider>(builder: (context, locProvider, child) {
-              return Text(
-                "  |  ${locProvider.pickUpLocation.locality}, ${locProvider.pickUpLocation.city} ",
-                maxLines: 1,
-                style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-                    color: ColorPalette.secondary,
-                    letterSpacing: 0.6,
-                    fontSize: SizeConfig.textMultiplier * 1.5),
-              );
-            }),
-            const Expanded(child: SizedBox())
+            const Expanded(flex: 1, child: SizedBox()),
+            Expanded(
+              flex: 2,
+              child: SizedBox(
+                height: SizeConfig.heightMultiplier * 150,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        "${widget.chairList.length} Ticket(s)",
+                        textAlign: TextAlign.center,
+                        style: CustomStyleClass.onboardingBodyTextStyle
+                            .copyWith(
+                                color: ColorPalette.secondary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: SizeConfig.textMultiplier * 1.8),
+                      ),
+                      Text(
+                        ticketsId(),
+                        textAlign: TextAlign.center,
+                        style: CustomStyleClass.onboardingBodyTextStyle
+                            .copyWith(
+                                color: ColorPalette.secondary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: SizeConfig.textMultiplier * 1.3),
+                      ),
+                      Text(
+                        "BMS_20220001",
+                        style: CustomStyleClass.onboardingBodyTextStyle
+                            .copyWith(
+                                color: ColorPalette.secondary,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                                fontSize: SizeConfig.textMultiplier * 1.5),
+                      ),
+                    ]),
+              ),
+            ),
           ],
         ),
-        SizedBox(
-          height: SizeConfig.heightMultiplier * 15,
-        ),
-      ]),
+      ),
     );
+  }
+
+  String ticketsId() {
+    String tickets = "";
+    for (int i = 0; i < ticketNumbers.length; i++) {
+      tickets = "$tickets | ${ticketNumbers[i]}";
+    }
+    return tickets.substring(2);
   }
 
   Widget amountSection() {
