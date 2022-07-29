@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "957120408982",
+    "project_id": "bookmyshowclone-db2ce",
+    "storage_bucket": "bookmyshowclone-db2ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957120408982:android:d71af0e23e5b60b1b9c1b7",
+        "android_client_info": {
+          "package_name": "com.sujitchanda.book_my_show_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957120408982-9apf0bnoptmqujkeu2ubetbqlq476pp6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzbjxpX-em_rrhpesV6XStCr8hBphjUqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "957120408982-9apf0bnoptmqujkeu2ubetbqlq476pp6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "957120408982-pd21vfitc8gsofli8uq5hbiaubh73kft.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.movieHallTicketBookingSystem"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
