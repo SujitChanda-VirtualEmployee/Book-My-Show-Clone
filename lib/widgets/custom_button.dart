@@ -21,7 +21,7 @@ Widget customButton({
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           enableFeedback: true,
-          padding: EdgeInsets.all(0),
+          padding: const EdgeInsets.all(0),
           shape: RoundedRectangleBorder(
 
               // side: BorderSide(color: bgColor, width: 0.0),

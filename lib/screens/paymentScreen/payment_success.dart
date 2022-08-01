@@ -1,24 +1,16 @@
 import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:book_my_show_clone/main.dart';
 import 'package:book_my_show_clone/services/providerService/auth_provider.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../../models/hall_details_model.dart';
 import '../../models/movie_details_model.dart';
-import '../../services/paymentServices/payment_controller.dart';
-import '../../services/providerService/location_provider.dart';
 import '../../utils/asset_images_strings.dart';
 import '../../utils/color_palette.dart';
 import '../../utils/custom_styles.dart';
@@ -57,7 +49,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   double convenienceFees = 0;
   int bookASmileFees = 0;
   ScreenshotController screenshotController = ScreenshotController();
-  Uint8List? _imageFile;
+
   List<String> ticketNumbers = [];
   @override
   void initState() {

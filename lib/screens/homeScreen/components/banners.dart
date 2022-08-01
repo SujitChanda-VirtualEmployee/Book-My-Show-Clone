@@ -1,6 +1,5 @@
 import 'package:book_my_show_clone/utils/asset_images_strings.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
-import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';

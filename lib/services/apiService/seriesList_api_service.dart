@@ -1,7 +1,7 @@
+// ignore: file_names
 import 'dart:developer';
 import 'package:book_my_show_clone/services/apiService/api_urls.dart';
 import 'package:book_my_show_clone/services/apiService/base_api.dart';
-import 'package:get/get_connect/http/src/response/response.dart';
 
 class SeriesListApiService {
   static Future seriesListApiService() async {

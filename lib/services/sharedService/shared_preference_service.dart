@@ -1,4 +1,5 @@
 import 'package:book_my_show_clone/main.dart';
+import 'package:flutter/foundation.dart';
 
 class SharedServices {
   static addUserDataToSF({
@@ -24,6 +25,8 @@ class SharedServices {
       preferences!.setBool('_userMarriageStatus', userMarriageStatus);
     }
 
-    print("User Data Added to SharedPreferences");
+    if (kDebugMode) {
+      print("User Data Added to SharedPreferences");
+    }
   }
 }

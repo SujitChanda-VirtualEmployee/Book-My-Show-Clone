@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:book_my_show_clone/models/banner_list_model.dart';
 import 'package:book_my_show_clone/models/movie_details_model.dart';

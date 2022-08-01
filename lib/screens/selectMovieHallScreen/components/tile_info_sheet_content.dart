@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:map_launcher/map_launcher.dart' as mapLauncher;
+import 'package:map_launcher/map_launcher.dart' as map_launcher;
 import '../../../models/hall_details_model.dart';
 import '../../../utils/color_palette.dart';
 import '../../../utils/custom_styles.dart';
@@ -26,10 +26,10 @@ class _TileInfoSheetContentState extends State<TileInfoSheetContent>
 
   void launchMap(
       {required double lat, required double lng, required String title}) async {
-    final availableMap = await mapLauncher.MapLauncher.installedMaps;
+    final availableMap = await map_launcher.MapLauncher.installedMaps;
 
     await availableMap.first.showDirections(
-        destination: mapLauncher.Coords(lat, lng), destinationTitle: title);
+        destination: map_launcher.Coords(lat, lng), destinationTitle: title);
     // .showMarker(coords: mapLauncher.Coords(lat, lng), title: title);
   }
 
@@ -382,7 +382,7 @@ class _TileInfoSheetContentState extends State<TileInfoSheetContent>
               SizedBox(
                 height: SizeConfig.heightMultiplier * 30,
               ),
-              Container(
+              SizedBox(
                 width: SizeConfig.fullWidth,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,

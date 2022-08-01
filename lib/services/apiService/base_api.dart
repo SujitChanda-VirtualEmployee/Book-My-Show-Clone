@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:book_my_show_clone/services/apiService/api_urls.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 
 class BaseApi {

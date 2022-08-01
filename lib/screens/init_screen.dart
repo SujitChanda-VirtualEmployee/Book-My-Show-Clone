@@ -3,10 +3,8 @@ import 'dart:developer';
 import 'package:book_my_show_clone/screens/landingScreen/landing_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-
 import '../services/providerService/location_provider.dart';
 import '../utils/asset_images_strings.dart';
 import '../utils/color_palette.dart';

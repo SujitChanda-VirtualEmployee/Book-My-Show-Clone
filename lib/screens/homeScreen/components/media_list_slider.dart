@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:book_my_show_clone/screens/mediaDetailsScreen/media_details_screen.dart';
 import 'package:book_my_show_clone/services/providerService/api_data_provider.dart';
 import 'package:book_my_show_clone/utils/asset_images_strings.dart';

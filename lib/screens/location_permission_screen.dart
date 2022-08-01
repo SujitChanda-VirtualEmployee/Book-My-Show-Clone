@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:book_my_show_clone/screens/landingScreen/landing_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';

@@ -1,19 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-
 import 'package:book_my_show_clone/models/movie_list_model.dart';
-import 'package:book_my_show_clone/services/firebaseServices/push_notification_service.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
 import 'package:book_my_show_clone/utils/custom_styles.dart';
 import 'package:book_my_show_clone/utils/enum_classes.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-
 import '../../services/apiService/api_urls.dart';
 import '../../services/providerService/api_data_provider.dart';
 import '../../utils/asset_images_strings.dart';
@@ -28,22 +26,24 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  TextEditingController _controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
   StreamController? _streamController;
   Stream? _stream;
   Timer? _debounce;
   _search() async {
-    if (_controller.text == null || _controller.text.isEmpty) {
+    if (controller.text == null || controller.text.isEmpty) {
       _streamController!.add(null);
       _initList();
       return;
     }
-    String uri = "http://${ApiUrl.baseUrl}${ApiUrl.search}${_controller.text}";
+    String uri = "http://${ApiUrl.baseUrl}${ApiUrl.search}${controller.text}";
     Response response = await get(Uri.parse(uri));
     if (response.statusCode == 200) {
       _streamController!.add(response.body);
     } else {
-      print("bad request");
+      if (kDebugMode) {
+        print("bad request");
+      }
     }
   }
 
@@ -54,7 +54,9 @@ class _SearchScreenState extends State<SearchScreen> {
       log(response.body.toString());
       _streamController!.add(response.body);
     } else {
-      print("bad request");
+      if (kDebugMode) {
+        print("bad request");
+      }
     }
   }
 
@@ -102,7 +104,7 @@ class _SearchScreenState extends State<SearchScreen> {
       height: 50,
       width: SizeConfig.fullWidth,
       child: TextFormField(
-        controller: _controller,
+        controller: controller,
         onChanged: (val) {
           if (_debounce?.isActive ?? false) _debounce!.cancel();
           _debounce = Timer(const Duration(microseconds: 500), () {

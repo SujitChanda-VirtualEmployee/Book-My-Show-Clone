@@ -1,9 +1,7 @@
-import 'dart:developer';
 
-import 'package:book_my_show_clone/screens/landingScreen/landing_screen.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -47,24 +45,31 @@ class AuthProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
 
+    // ignore: prefer_function_declarations_over_variables
     final PhoneVerificationCompleted verificationCompleted =
         (PhoneAuthCredential credential) async {
-      this.loading = true;
+      loading = true;
       notifyListeners();
     };
 
+    // ignore: prefer_function_declarations_over_variables
     final PhoneVerificationFailed verificationFailed =
         (FirebaseAuthException e) {
-      this.loading = true;
-      print(e.code);
-      this.error = e.toString();
+      loading = true;
+      if (kDebugMode) {
+        print(e.code);
+      }
+      error = e.toString();
       notifyListeners();
     };
 
+    // ignore: prefer_function_declarations_over_variables
     final PhoneCodeSent smsOtpSend = (String verId, int? resendToken) async {
-      this.verificationId = verId;
-      print(number);
-      this.loading = false;
+      verificationId = verId;
+      if (kDebugMode) {
+        print(number);
+      }
+      loading = false;
       notifyListeners();
       smsOtpDialog(context, number);
     };
@@ -76,19 +81,21 @@ class AuthProvider with ChangeNotifier {
         verificationFailed: verificationFailed,
         codeSent: smsOtpSend,
         codeAutoRetrievalTimeout: (String verId) {
-          this.verificationId = verId;
+          verificationId = verId;
         },
       );
     } catch (e) {
-      this.error = e.toString();
-      this.loading = false;
+      error = e.toString();
+      loading = false;
       notifyListeners();
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
   smsOtpDialog(BuildContext context, String number) {
-    this.loading = false;
+    loading = false;
     notifyListeners();
     return showModalBottomSheet(
             isDismissible: false,
@@ -149,16 +156,16 @@ class AuthProvider with ChangeNotifier {
                             controller: _pinEditingController,
                             //currentCode: _code,
                             onCodeSubmitted: (code) {
-                              this.smsOtp = code;
+                              smsOtp = code;
                               otpSubmit = true;
                               notifyListeners();
                             },
                             onCodeChanged: (code) async {
                               if (code!.length == 6) {
-                                this.smsOtp = code;
+                                smsOtp = code;
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
-                                this.smsOtp = code;
+                                smsOtp = code;
                                 otpSubmit = true;
                                 notifyListeners();
                                 Navigator.of(context, rootNavigator: true)
@@ -222,7 +229,7 @@ class AuthProvider with ChangeNotifier {
         //     })
 
         .whenComplete(() async {
-      this.loading = true;
+      loading = true;
       notifyListeners();
       if (smsOtp.length == 6 && otpSubmit)
         // ignore: curly_braces_in_flow_control_structures
@@ -235,7 +242,9 @@ class AuthProvider with ChangeNotifier {
           final User? user =
               (await _auth.signInWithCredential(phoneAuthCredential)).user;
           if (user != null) {
-            print("Login SuccessFul");
+            if (kDebugMode) {
+              print("Login SuccessFul");
+            }
             _services.getUserById(user.uid).then((snapShot) {
               if (snapShot.exists) {
                 //user data already exists
@@ -273,16 +282,20 @@ class AuthProvider with ChangeNotifier {
               }
             });
           } else {
-            print('Login failed');
+            if (kDebugMode) {
+              print('Login failed');
+            }
           }
         } catch (e) {
-          this.error = 'Invalid OTP';
-          this.loading = false;
+          error = 'Invalid OTP';
+          loading = false;
           notifyListeners();
 
-          print(e.toString());
+          if (kDebugMode) {
+            print(e.toString());
+          }
         }
-      this.loading = false;
+      loading = false;
       notifyListeners();
     });
   }

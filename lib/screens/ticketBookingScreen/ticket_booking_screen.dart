@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:book_my_show_clone/screens/paymentScreen/payment_screen.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:flutter/material.dart';

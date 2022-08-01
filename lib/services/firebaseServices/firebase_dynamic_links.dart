@@ -2,7 +2,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 class FirebaseDynamicLinkService {
   Future<String>  screateDynamicLink(bool short) async {
-    String _linkMessage = "";
+    String linkMessage = "";
     FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://movieHallTicketBookingSystem.page.link',
@@ -26,8 +26,8 @@ class FirebaseDynamicLinkService {
       url = await dynamicLinks.buildLink(parameters);
     }
 
-    _linkMessage = url.toString();
+    linkMessage = url.toString();
 
-    return _linkMessage;
+    return linkMessage;
   }
 }

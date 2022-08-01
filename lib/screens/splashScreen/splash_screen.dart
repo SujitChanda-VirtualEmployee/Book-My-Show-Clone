@@ -1,5 +1,4 @@
-import 'package:book_my_show_clone/main.dart';
-import 'package:book_my_show_clone/screens/landingScreen/landing_screen.dart';
+
 import 'package:book_my_show_clone/screens/welcomScreen/welcome_screen.dart';
 import 'package:book_my_show_clone/utils/asset_images_strings.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';

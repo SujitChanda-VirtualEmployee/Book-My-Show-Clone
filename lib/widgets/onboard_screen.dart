@@ -8,7 +8,10 @@ import '../utils/asset_images_strings.dart';
 import '../utils/size_config.dart';
 
 class OnBaordScreen extends StatefulWidget {
+  const OnBaordScreen({Key? key}) : super(key: key);
+
   @override
+  // ignore: library_private_types_in_public_api
   _OnBaordScreenState createState() => _OnBaordScreenState();
 }
 

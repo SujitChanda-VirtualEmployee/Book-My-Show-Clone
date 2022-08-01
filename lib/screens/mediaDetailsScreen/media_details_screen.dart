@@ -298,7 +298,7 @@ class _MediaDetailsScreenState extends State<MediaDetailsScreen> {
                                     ListView.separated(
                                       padding: const EdgeInsets.all(0),
                                       shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       itemCount: apiDataProvider
                                           .movieDetailsData!.ratings!.length,
                                       itemBuilder:

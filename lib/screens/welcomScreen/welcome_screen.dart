@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'package:book_my_show_clone/utils/color_palette.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:sms_autofill/sms_autofill.dart';
-
 import '../../services/providerService/auth_provider.dart';
 import '../../widgets/customer_loader.dart';
 import '../../widgets/onboard_screen.dart';
@@ -19,12 +16,13 @@ class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final SmsAutoFill _autoFill = SmsAutoFill();
-  TextEditingController _phoneNumberController = new TextEditingController();
+  final SmsAutoFill autoFill = SmsAutoFill();
+  TextEditingController phoneNumberController =  TextEditingController();
   late String completePhoneNumber;
   bool isValid2 = false;
   bool isValid = false;
@@ -40,12 +38,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  Future<Null> validatePhone(StateSetter updateState) async {
+  Future<void> validatePhone(StateSetter updateState) async {
     if (kDebugMode) {
-      print("in validate : ${_phoneNumberController.text.length}");
+      print("in validate : ${phoneNumberController.text.length}");
     }
-    if (_phoneNumberController.text.length > 9 &&
-        _phoneNumberController.text.length < 11) {
+    if (phoneNumberController.text.length > 9 &&
+        phoneNumberController.text.length < 11) {
       updateState(() {
         isValid = true;
       });
@@ -73,7 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       //   try {
       //     completePhoneNumber = (await _autoFill.hint)!;
       //     setState(() {
-      //       _phoneNumberController.text = completePhoneNumber.substring(3);
+      //       phoneNumberController.text = completePhoneNumber.substring(3);
       //     });
       //   } catch (e) {
       //     if (kDebugMode) {
@@ -195,7 +193,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               //maxLength: 10,
 
                               keyboardType: TextInputType.number,
-                              controller: _phoneNumberController,
+                              controller: phoneNumberController,
                               autofocus: true,
                               onChanged: (text) {
                                 validatePhone(state);
@@ -206,8 +204,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ),
                           const SizedBox(width: 10),
                           Visibility(
-                              visible: _phoneNumberController.text.length > 9 &&
-                                  _phoneNumberController.text.length < 11,
+                              visible: phoneNumberController.text.length > 9 &&
+                                  phoneNumberController.text.length < 11,
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 0),
                                 child: RoundedIconBtn(
@@ -238,14 +236,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 );
               })).whenComplete(() {
-        if (_phoneNumberController.text.length == 10 && numberSubmit) {
+        if (phoneNumberController.text.length == 10 && numberSubmit) {
           if (kDebugMode) {
-            print(_phoneNumberController.text);
+            print(phoneNumberController.text);
           }
           setState(() {
             auth.loading = true;
           });
-          String number = '+91${_phoneNumberController.text}';
+          String number = '+91${phoneNumberController.text}';
 
           auth
               .verifyPhone(
@@ -253,10 +251,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             number: number,
           )
               .then((value) {
-            _phoneNumberController.clear();
+            phoneNumberController.clear();
           });
         } else {
-          _phoneNumberController.clear();
+          phoneNumberController.clear();
         }
       });
     }
@@ -271,7 +269,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             Column(
               children: [
-                Expanded(
+                const Expanded(
                   child: OnBaordScreen(),
                 ),
                 Container(

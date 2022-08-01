@@ -36,12 +36,12 @@ class RoundedIconBtn extends StatelessWidget {
         boxShadow: [
           showShadow
               ? BoxShadow(
-                  offset: Offset(0.0,0.0),
+                  offset: const Offset(0.0,0.0),
                   blurRadius: 1,
                   spreadRadius: 1,
                   color: Colors.grey.withOpacity(0.5),
                 )
-              : BoxShadow(color: Colors.transparent)
+              : const BoxShadow(color: Colors.transparent)
         ],
       ),
       child: ElevatedButton(

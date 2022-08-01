@@ -1,15 +1,11 @@
 import 'dart:io';
-
-import 'package:book_my_show_clone/screens/landingScreen/landing_screen.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-
 import '../services/firebaseServices/firebase_services.dart';
 import '../services/providerService/auth_provider.dart';
 import '../services/sharedService/shared_preference_service.dart';
@@ -49,7 +45,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? token;
 
   String? data1;
-  var imageData;
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -251,25 +247,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Widget _header() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 10),
-      child: Text.rich(TextSpan(
-          text: 'Welcome,\n',
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(
-              color: ColorPalette.primary,
-              fontSize: 2.5 * SizeConfig.textMultiplier),
-          children: <InlineSpan>[
-            TextSpan(
-              text: 'Create New Account.',
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                    fontSize: 2 * SizeConfig.textMultiplier,
-                    color: Colors.grey.shade600,
-                  ),
-            )
-          ])),
-    );
-  }
 
   Widget _showUserNameInput() {
     return Padding(

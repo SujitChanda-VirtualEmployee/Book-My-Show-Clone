@@ -4,11 +4,9 @@ import 'package:book_my_show_clone/services/providerService/auth_provider.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../models/hall_details_model.dart';
 import '../../models/movie_details_model.dart';
 import '../../services/paymentServices/payment_controller.dart';

@@ -7,14 +7,16 @@ import 'package:book_my_show_clone/services/firebaseServices/firebase_services.d
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:path_provider/path_provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
-final AndroidNotificationChannel channel = const AndroidNotificationChannel(
+// ignore: prefer_const_constructors
+final AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
   'High Importance Notifications', // title
   // description
@@ -63,7 +65,9 @@ Future<void> sendNotificationToPeer(
       ),
     );
   } catch (e) {
-    print(e);
+    if (kDebugMode) {
+      print(e);
+    }
   }
 }
 
@@ -95,11 +99,19 @@ Future<void> _firebaseMessagingBackgroundHandler(
       NotificationDetails(android: notificationDetails);
   flutterLocalNotificationplugin.show(data.hashCode, data['title'],
       data['message'], notificationDetailsPlatformSpefics);
-  print("foreground Data  ${message.messageId}");
-  print(message.data);
+  if (kDebugMode) {
+    print("foreground Data  ${message.messageId}");
+  }
+  if (kDebugMode) {
+    print(message.data);
+  }
 
-  print("Handling a background message : ${message.messageId}");
-  print(message.data);
+  if (kDebugMode) {
+    print("Handling a background message : ${message.messageId}");
+  }
+  if (kDebugMode) {
+    print(message.data);
+  }
 }
 
 FirebaseServices _service = FirebaseServices();
@@ -130,7 +142,9 @@ class FirebaseNotifcation {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       var data = message.data;
       //AndroidNotification? android = message.notification?.android;
-      print(message.data);
+      if (kDebugMode) {
+        print(message.data);
+      }
       BigPictureStyleInformation? styleInformation;
 
       if (data['image'] != "" && data['logo'] != "") {
@@ -154,8 +168,12 @@ class FirebaseNotifcation {
           NotificationDetails(android: notificationDetails);
       flutterLocalNotificationplugin.show(data.hashCode, data['title'],
           data['message'], notificationDetailsPlatformSpefics);
-      print("foreground Data  ${message.messageId}");
-      print(message.data);
+      if (kDebugMode) {
+        print("foreground Data  ${message.messageId}");
+      }
+      if (kDebugMode) {
+        print(message.data);
+      }
       // model = ChatProvider( channelUrl: data['channelUrl']);
       // model.loadChannel().then((value) {
       //   model.loadMessages(reload: true);
@@ -181,10 +199,10 @@ class FirebaseNotifcation {
           setAsGroupSummary: true,
         );
 
-        // NotificationDetails groupNotificationDetailsPlatformSpefics =
-        //     NotificationDetails(android: groupNotificationDetails);
-        // await flutterLocalNotificationplugin.show(
-        //     0, '', '', groupNotificationDetailsPlatformSpefics);
+        NotificationDetails groupNotificationDetailsPlatformSpefics =
+            NotificationDetails(android: groupNotificationDetails);
+        await flutterLocalNotificationplugin.show(
+            0, '', '', groupNotificationDetailsPlatformSpefics);
       }
     });
   }
@@ -192,16 +210,19 @@ class FirebaseNotifcation {
   getToken() async {
     await FirebaseMessaging.instance.getToken().then((val) {
       if (preferences!.getString('FCMToken') != val) {
-        print('FB Token from Server: ' + val!);
+        if (kDebugMode) {
+          print('FB Token from Server: ${val!}');
+        }
         _service.updateToken({
           'id': FirebaseAuth.instance.currentUser!.uid,
           'token': val,
         });
-        preferences!.setString('FCMToken', val);
+        preferences!.setString('FCMToken', val!);
       } else {
         // ignore: prefer_interpolation_to_compose_strings
-        print('FB Token from SF: ' +
-            preferences!.getString('FCMToken').toString());
+        if (kDebugMode) {
+          print('FB Token from SF: ${preferences!.getString('FCMToken')}');
+        }
       }
     });
     // print(token);

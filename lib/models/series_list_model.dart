@@ -15,7 +15,7 @@ class SeriesListModel {
     if (json['Search'] != null) {
       search = <Search>[];
       json['Search'].forEach((v) {
-        search!.add(new Search.fromJson(v));
+        search!.add( Search.fromJson(v));
       });
     }
     totalResults = json['totalResults'];
@@ -23,12 +23,12 @@ class SeriesListModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.search != null) {
-      data['Search'] = this.search!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data =  <String, dynamic>{};
+    if (search != null) {
+      data['Search'] = search!.map((v) => v.toJson()).toList();
     }
-    data['totalResults'] = this.totalResults;
-    data['Response'] = this.response;
+    data['totalResults'] = totalResults;
+    data['Response'] = response;
     return data;
   }
 }
@@ -51,12 +51,12 @@ class Search {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Title'] = this.title;
-    data['Year'] = this.year;
-    data['imdbID'] = this.imdbID;
-    data['Type'] = this.type;
-    data['Poster'] = this.poster;
+    final Map<String, dynamic> data =  <String, dynamic>{};
+    data['Title'] = title;
+    data['Year'] = year;
+    data['imdbID'] = imdbID;
+    data['Type'] = type;
+    data['Poster'] = poster;
     return data;
   }
 }
