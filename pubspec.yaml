@@ -93,5 +93,8 @@ flutter:
     - family: Roboto
       fonts:
         - asset: fonts/Roboto-Regular.ttf      
-
+        
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Regular.ttf    
 

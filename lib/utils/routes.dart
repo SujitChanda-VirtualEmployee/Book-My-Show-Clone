@@ -12,6 +12,7 @@ import '../screens/mediaDetailsScreen/media_details_screen.dart';
 
 import '../screens/paymentScreen/payment_screen.dart';
 import '../screens/paymentScreen/payment_success.dart';
+import '../screens/profileScreen/editProfileScreen/edit_profile_screen.dart';
 import '../screens/searchScreen/search_screen.dart';
 import '../screens/selectMovieHallScreen/select_movie_hall_screen.dart';
 import '../screens/splashScreen/splash_screen.dart';
@@ -32,6 +33,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => const BuzzScreen());
       case InitScreen.id:
         return MaterialPageRoute(builder: (context) => const InitScreen());
+      case EditProfileScreen.id:
+        return MaterialPageRoute(
+            builder: (context) => const EditProfileScreen());
+
       case LocationPermissionScreen.id:
         if (args is List<String>) {
           return CupertinoPageRoute(
