@@ -3,6 +3,7 @@ class AssetImageClass {
   static const String splashAppLogo = "assets/splashAppLogo.png";
   static const String paidLogo = "assets/paid.png";
   static const String success = "assets/transaction_successful.gif";
+  static const String empty = "assets/no_data.jpeg";
 
   // Drawer Iacons
   static const String drawerIconHome = "images/home_ic.png";

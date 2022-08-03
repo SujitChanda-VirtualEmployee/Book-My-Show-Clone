@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class MySeparator extends StatelessWidget {
-  const MySeparator({Key? key, this.height = 1, this.color = Colors.black})
+  const MySeparator({Key? key, this.height = 1, this.color = Colors.black, required this.direction})
       : super(key: key);
   final double height;
   final Color color;
+  final Axis direction;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class MySeparator extends StatelessWidget {
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          direction: Axis.horizontal,
+          direction: direction,
           children: List.generate(dashCount, (_) {
             return SizedBox(
               width: dashWidth,

@@ -1,12 +1,18 @@
+import 'dart:developer';
+
+import 'package:book_my_show_clone/screens/noInternerScreen/no_interner_screen.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_phone_number/get_phone_number.dart';
 import 'package:provider/provider.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import '../../services/providerService/auth_provider.dart';
-import '../../widgets/customer_loader.dart';
+import '../../services/providerService/connectivity_provider.dart';
 import '../../widgets/onboard_screen.dart';
 import '../../widgets/rounded_icon_btn.dart';
 
@@ -22,7 +28,7 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final SmsAutoFill autoFill = SmsAutoFill();
-  TextEditingController phoneNumberController =  TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
   late String completePhoneNumber;
   bool isValid2 = false;
   bool isValid = false;
@@ -62,11 +68,37 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
   }
 
+  Future _tryPasteCurrentPhone() async {
+    if (!mounted) return;
+    try {
+      final autoFill = SmsAutoFill();
+      final phone = await autoFill.hint;
+      if (phone == null) {
+        log('Failed to get mobile number because of 123');
+        return;
+      }
+
+      if (!mounted) {
+        log('Failed to get mobile number because of 345');
+        return;
+      }
+
+      phoneNumberController.text = phone.substring(3);
+      log(phone);
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        log('Failed to get mobile number because of: ${e.message}');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
 
     void validatePhoneNumber(BuildContext context) async {
+      // Future<void>.delayed(
+      //     const Duration(milliseconds: 300), _tryPasteCurrentPhone);
       // if (Platform.isAndroid) {
       //   try {
       //     completePhoneNumber = (await _autoFill.hint)!;
@@ -192,7 +224,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               ),
                               //maxLength: 10,
 
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.phone,
+                              autofillHints: const [
+                                AutofillHints.telephoneNumberLocalPrefix,
+                              ],
                               controller: phoneNumberController,
                               autofocus: true,
                               onChanged: (text) {
@@ -240,9 +275,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           if (kDebugMode) {
             print(phoneNumberController.text);
           }
-          setState(() {
-            auth.loading = true;
-          });
+          EasyLoading.show(status: "Sending OTP");
           String number = '+91${phoneNumberController.text}';
 
           auth
@@ -265,115 +298,118 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                const Expanded(
-                  child: OnBaordScreen(),
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                      color: ColorPalette.secondary,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15))),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: SizeConfig.heightMultiplier * 30,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text.rich(
-                            TextSpan(
-                                text: 'A Clone of ',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                      color: ColorPalette.white,
-                                      fontWeight: FontWeight.bold,
+        child: Consumer<ConnectivityProvider>(
+            builder: (consumerContext, model, child) {
+          return Stack(
+            children: [
+              Column(
+                children: [
+                  const Expanded(
+                    child: OnBaordScreen(),
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                        color: ColorPalette.secondary,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15))),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: SizeConfig.heightMultiplier * 30,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text.rich(
+                              TextSpan(
+                                  text: 'A Clone of ',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                        color: ColorPalette.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                  children: <InlineSpan>[
+                                    TextSpan(
+                                      text: ' Book My Show App',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: ColorPalette.primary,
+                                          ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => Container(),
                                     ),
-                                children: <InlineSpan>[
-                                  TextSpan(
-                                    text: ' Book My Show App',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: ColorPalette.primary,
-                                        ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () => Container(),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '  made with Flutter, Firebase and OMDB ',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1!
-                                        .copyWith(
-                                          color: ColorPalette.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () => Container(),
-                                  )
-                                ]),
-                            textAlign: TextAlign.center),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  // side: BorderSide(color: bgColor, width: 0.0),
-                                  borderRadius: BorderRadius.circular(8)),
-                              primary: ColorPalette.primary,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "LOGIN",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        letterSpacing: 2,
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
+                                    TextSpan(
+                                      text:
+                                          '  made with Flutter, Firebase and OMDB ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                            color: ColorPalette.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => Container(),
+                                    )
+                                  ]),
+                              textAlign: TextAlign.center),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    // side: BorderSide(color: bgColor, width: 0.0),
+                                    borderRadius: BorderRadius.circular(8)),
+                                primary: ColorPalette.primary,
                               ),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                auth.screen = 'Login';
-                              });
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "LOGIN",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                          letterSpacing: 2,
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  auth.screen = 'Login';
+                                });
 
-                              validatePhoneNumber(context);
-                            },
+                                validatePhoneNumber(context);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Visibility(
-              visible: auth.loading,
-              child: glassLoading(),
-            )
-          ],
-        ),
+                ],
+              ),
+              Visibility(
+                visible: !model.isOnline,
+                child: const NoInternetScreen(),
+              )
+            ],
+          );
+        }),
       ),
     );
   }

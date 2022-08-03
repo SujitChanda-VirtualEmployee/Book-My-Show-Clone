@@ -1,5 +1,7 @@
 import 'package:book_my_show_clone/main.dart';
+import 'package:book_my_show_clone/screens/profileScreen/accountSertingScreen/account_settings_screen.dart';
 import 'package:book_my_show_clone/screens/profileScreen/editProfileScreen/edit_profile_screen.dart';
+import 'package:book_my_show_clone/screens/profileScreen/purchaseHistoryScreen/purchase_history_screen.dart';
 import 'package:book_my_show_clone/utils/asset_images_strings.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -132,38 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: MediaQuery.of(context).size.width,
         color: ColorPalette.background,
         padding: const EdgeInsets.only(top: 0),
-        child: sliverUpperSection()
-        // : Stack(
-        //     children: [
-        //       Column(
-        //         children: [
-        //           _myPic(),
-        //           const SizedBox(
-        //             height: 40,
-        //           ),
-        //           Column(children: [
-        //             _nameEditor(),
-        //             _emailEditor(),
-        //             _phoneEditor(),
-        //           ]),
-        //         ],
-        //       ),
-        //       Positioned(
-        //           right: 5,
-        //           top: 5,
-        //           child: RoundedIconBtn(
-        //             icon: Icons.close,
-        //             bgColor: const Color(0XFFe8f5fe),
-        //             iconSize: 22,
-        //             press: () {
-        //               setState(() {
-        //                 edit = !edit;
-        //               });
-        //             },
-        //           ))
-        //     ],
-        //   ),
-        );
+        child: sliverUpperSection());
   }
 
   Widget sliverUpperSection() {
@@ -173,104 +144,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         SizedBox(
           height: SizeConfig.heightMultiplier * 18,
         ),
-        // Stack(
-        //   children: [
-        //     Container(
-        //       padding: const EdgeInsets.only(
-        //           top: 20, bottom: 20, left: 10, right: 5),
-        //       decoration: BoxDecoration(
-        //         borderRadius: const BorderRadius.only(
-        //             topLeft: Radius.circular(30),
-        //             topRight: Radius.circular(5),
-        //             bottomLeft: Radius.circular(5),
-        //             bottomRight: Radius.circular(30)),
-        //         color: ColorPalette.secondary.withOpacity(0.5),
-        //       ),
-        //       width: MediaQuery.of(context).size.width,
-        //       child: Row(
-        //         children: [
-        //           Container(
-        //             height: 150 * SizeConfig.heightMultiplier,
-        //             width: 150 * SizeConfig.heightMultiplier,
-        //             decoration: BoxDecoration(
-        //               shape: BoxShape.circle,
-        //               border: Border.all(
-        //                 width: 1,
-        //                 color: Colors.black,
-        //               ),
-        //               boxShadow: [
-        //                 BoxShadow(
-        //                     spreadRadius: 0.5,
-        //                     blurRadius: 0.5,
-        //                     color: Colors.black.withOpacity(0.5),
-        //                     offset: const Offset(0.7, 0.7))
-        //               ],
-        //             ),
-        //             child: ClipRRect(
-        //               clipBehavior: Clip.antiAliasWithSaveLayer,
-        //               borderRadius:
-        //                   const BorderRadius.all(Radius.circular(500)),
-        //               child: CachedNetworkImage(
-        //                 imageUrl: _uploadedProfilePicURL == null
-        //                     ? preferences!.getString('_userPhoto')!
-        //                     : _uploadedProfilePicURL!,
-        //                 width: MediaQuery.of(context).size.width,
-        //                 height: 200,
-        //                 fit: BoxFit.cover,
-        //                 placeholder: (context, url) =>
-        //                     const CircularProgressIndicator(),
-        //                 errorWidget: (context, url, error) =>
-        //                     const Icon(Icons.error),
-        //               ),
-        //             ),
-        //           ),
-        //           const SizedBox(width: 20),
-        //           Expanded(
-        //             child: SizedBox(
-        //               height: 120 * SizeConfig.heightMultiplier,
-        //               child: Column(
-        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 mainAxisSize: MainAxisSize.max,
-        //                 children: [
-        //                   Text(
-        //                     nameTextEditingController.text,
-        //                     style: Theme.of(context).textTheme.headline6,
-        //                     maxLines: 1,
-        //                   ),
-        //                   Text(
-        //                     emailTextEditingController.text,
-        //                     style: Theme.of(context).textTheme.bodyText1,
-        //                   ),
-        //                   Text(
-        //                     phoneTextEditingController.text,
-        //                     style: Theme.of(context).textTheme.bodyText1,
-        //                   ),
-        //                 ],
-        //               ),
-        //             ),
-        //           )
-        //         ],
-        //       ),
-        //     ),
-        //     Positioned(
-        //         right: 5,
-        //         top: 5,
-        //         child: RoundedIconBtn(
-        //           icon: Icons.edit_outlined,
-        //           bgColor: const Color(0XFFe8f5fe),
-        //           iconSize: 22,
-        //           press: () {
-        //             setState(() {
-        //               edit = !edit;
-        //             });
-        //           },
-        //         ))
-        //   ],
-        // ),
-        // const SizedBox(
-        //   height: 20,
-        // ),
 
         Container(
           color: ColorPalette.white,
@@ -280,7 +153,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 tileColor: ColorPalette.primary,
                 dense: true,
-                onTap: () {},
+                onTap: () {
+                  pushNewScreenWithRouteSettings(
+                    context,
+                    screen: const PurchaseHistoryScreen(),
+                    settings:
+                        const RouteSettings(name: PurchaseHistoryScreen.id),
+                    withNavBar: false,
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                },
                 leading: const Icon(
                   Icons.shopping_cart_checkout_rounded,
                   color: Colors.black,
@@ -367,7 +249,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 tileColor: ColorPalette.primary,
                 dense: true,
-                onTap: () {},
+                onTap: () {
+                  pushNewScreenWithRouteSettings(
+                    context,
+                    screen: const AccountSettingScreen(),
+                    settings:
+                        const RouteSettings(name: AccountSettingScreen.id),
+                    withNavBar: false,
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                },
                 leading: const Icon(
                   Icons.settings_outlined,
                   color: Colors.black,

@@ -106,7 +106,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       'profile_Pic_URL': _uploadedProfilePicURL == null
           ? preferences!.getString('_userPhoto')
           : _uploadedProfilePicURL,
-
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         shape: const RoundedRectangleBorder(
@@ -325,8 +324,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Center(
         child: Stack(clipBehavior: Clip.none, children: [
           Container(
-            height: 150 * SizeConfig.heightMultiplier,
-            width: 150 * SizeConfig.heightMultiplier,
+            height: 180 * SizeConfig.heightMultiplier,
+            width: 180 * SizeConfig.heightMultiplier,
+            margin: EdgeInsets.only(bottom: SizeConfig.heightMultiplier * 15),
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
@@ -337,8 +337,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 imageUrl: _uploadedProfilePicURL == null
                     ? preferences!.getString('_userPhoto')!
                     : _uploadedProfilePicURL!,
-                height: 150 * SizeConfig.heightMultiplier,
-                width: 150 * SizeConfig.heightMultiplier,
+                height: 180 * SizeConfig.heightMultiplier,
+                width: 180 * SizeConfig.heightMultiplier,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Center(
                   child: Image.asset(
@@ -359,7 +359,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           Positioned(
-              bottom: 0,
+              bottom: SizeConfig.heightMultiplier * 15,
               right: 0,
               child: ClipOval(
                 child: GestureDetector(

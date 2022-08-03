@@ -1,6 +1,7 @@
 import 'package:book_my_show_clone/screens/splashScreen/splash_screen.dart';
 import 'package:book_my_show_clone/services/providerService/api_data_provider.dart';
 import 'package:book_my_show_clone/services/providerService/auth_provider.dart';
+import 'package:book_my_show_clone/services/providerService/connectivity_provider.dart';
 import 'package:book_my_show_clone/services/providerService/location_provider.dart';
 import 'package:book_my_show_clone/utils/app_theme.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
@@ -44,6 +45,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => ApiDataProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ConnectivityProvider(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -54,11 +58,14 @@ void configLoading() {
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 1000)
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-    ..loadingStyle = EasyLoadingStyle.light
+    ..loadingStyle = EasyLoadingStyle.dark
     ..indicatorSize = 45.0
-    ..indicatorWidget = const CupertinoActivityIndicator(
-      color: Colors.black,
-      radius: 20,
+    ..indicatorWidget = Container(
+      padding: const EdgeInsets.all(5),
+      child: const CupertinoActivityIndicator(
+        color: Colors.white,
+        radius: 20,
+      ),
     )
     ..radius = 8.0
     ..boxShadow = [
@@ -68,7 +75,7 @@ void configLoading() {
           blurRadius: 2,
           spreadRadius: 2)
     ]
-    ..maskColor = ColorPalette.secondary.withOpacity(0.5)
+    ..maskColor = ColorPalette.secondary.withOpacity(0.3)
     ..maskType = EasyLoadingMaskType.custom
     ..userInteractions = false
     ..dismissOnTap = false;

@@ -29,10 +29,9 @@ class LocationProvider with ChangeNotifier {
     pickUpLocation.street = "${placemark[0].street}";
     pickUpLocation.locality = "${placemark[0].subLocality}";
     pickUpLocation.country = "${placemark[0].country}";
-    pickUpLocation.stateOrProvince = "${placemark[0].administrativeArea }";
+    pickUpLocation.stateOrProvince = "${placemark[0].administrativeArea}";
     pickUpLocation.city = "${placemark[0].locality}";
-        pickUpLocation.postalCode = '${placemark[0].postalCode}';
-
+    pickUpLocation.postalCode = '${placemark[0].postalCode}';
 
     permissionAllowed = true;
 
@@ -56,10 +55,15 @@ class LocationProvider with ChangeNotifier {
   Future<void> getMoveCamera() async {
     List<Placemark> placemark =
         await placemarkFromCoordinates(latitude, longitude);
-
     final addresses =
         ' ${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].locality}, ${placemark[0].country}, ${placemark[0].postalCode}';
     pickUpLocation.placeFormattedAddress = addresses;
+    pickUpLocation.street = "${placemark[0].street}";
+    pickUpLocation.locality = "${placemark[0].subLocality}";
+    pickUpLocation.country = "${placemark[0].country}";
+    pickUpLocation.stateOrProvince = "${placemark[0].administrativeArea}";
+    pickUpLocation.city = "${placemark[0].locality}";
+    pickUpLocation.postalCode = '${placemark[0].postalCode}';
 
     notifyListeners();
   }
@@ -67,6 +71,6 @@ class LocationProvider with ChangeNotifier {
   Future<void> savePrefs() async {
     preferences!.setDouble('latitude', latitude);
     preferences!.setDouble('longitude', longitude);
-    preferences!.setString('address', pickUpLocation.placeName!);
+    preferences!.setString('address', pickUpLocation.placeFormattedAddress!);
   }
 }

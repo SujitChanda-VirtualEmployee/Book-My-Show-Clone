@@ -1,5 +1,6 @@
 import 'package:book_my_show_clone/screens/homeScreen/components/banners.dart';
 import 'package:book_my_show_clone/screens/homeScreen/components/media_list_slider.dart';
+import 'package:book_my_show_clone/screens/mapScreen/map_screen.dart';
 import 'package:book_my_show_clone/screens/searchScreen/search_screen.dart';
 import 'package:book_my_show_clone/services/providerService/location_provider.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
@@ -42,22 +43,32 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Consumer<LocationProvider>(
                     builder: (context, locProvider, child) {
-                  return Row(
-                    children: [
-                      Text(
-                        "${locProvider.pickUpLocation.locality}, ${locProvider.pickUpLocation.city} ",
-                        style: CustomStyleClass.onboardingBodyTextStyle
-                            .copyWith(
-                                color: Colors.grey.withOpacity(0.6),
-                                letterSpacing: 0.6,
-                                fontSize: SizeConfig.textMultiplier * 1.5),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: Colors.grey.withOpacity(0.6),
-                        size: 10,
-                      )
-                    ],
+                  return GestureDetector(
+                    onTap: () {
+                      pushNewScreenWithRouteSettings(context,
+                          screen: const MapScreen(),
+                          withNavBar: false,
+                          pageTransitionAnimation:
+                              PageTransitionAnimation.cupertino,
+                          settings: const RouteSettings(name: MapScreen.id));
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          "${locProvider.pickUpLocation.locality}, ${locProvider.pickUpLocation.city} ",
+                          style: CustomStyleClass.onboardingBodyTextStyle
+                              .copyWith(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  letterSpacing: 0.6,
+                                  fontSize: SizeConfig.textMultiplier * 1.5),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: Colors.grey.withOpacity(0.6),
+                          size: 10,
+                        )
+                      ],
+                    ),
                   );
                 }),
               ),

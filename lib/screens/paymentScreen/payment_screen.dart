@@ -1,9 +1,14 @@
+import 'dart:developer';
+
 import 'package:book_my_show_clone/main.dart';
 import 'package:book_my_show_clone/screens/paymentScreen/payment_success.dart';
+import 'package:book_my_show_clone/services/firebaseServices/firebase_services.dart';
 import 'package:book_my_show_clone/services/providerService/auth_provider.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +52,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   double gst = 0;
   double convenienceFees = 0;
   int bookASmileFees = 0;
+  FirebaseServices firebaseServices = FirebaseServices();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  String tickets = "";
   @override
   void initState() {
     calculateAmount();
@@ -57,12 +65,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
   calculateAmount() {
     for (int i = 0; i < widget.chairList.length; i++) {
       subtotalAmount = subtotalAmount + widget.chairList[i].price;
+
+      tickets = "$tickets | ${widget.chairList[i].id}";
     }
     gst = (18 / 100) * subtotalAmount;
     baseAmount = (10 / 100) * subtotalAmount;
     bookASmileFees = widget.chairList.length;
     convenienceFees = gst + baseAmount;
     totalPayable = convenienceFees + subtotalAmount + bookASmileFees;
+    log(tickets.substring(2));
   }
 
   @override
@@ -94,30 +105,58 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                   onPressed: () {
-                    // Navigator.pushNamed(context, PaymentSuccessScreen.id,
-                    //     arguments: [
-                    //       widget.movieDetailsData,
-                    //       widget.theatreDetailsData,
-                    //       widget.selectedDate,
-                    //       widget.selectedTime,
-                    //       widget.chairList,
-                    //     ]);
                     paymentController
                         .makePayment(
                             amount: paymentController.calculateAmount(
                                 totalPayable.toStringAsFixed(2)),
                             currency: "INR",
                             dataProvider: dataProvider)
-                        .whenComplete(() {
+                        .whenComplete(() async {
                       if (dataProvider.paymentSuccess == true) {
-                        Navigator.pushNamed(context, PaymentSuccessScreen.id,
-                            arguments: [
-                              widget.movieDetailsData,
-                              widget.theatreDetailsData,
-                              widget.selectedDate,
-                              widget.selectedTime,
-                              widget.chairList,
-                            ]);
+                        EasyLoading.show(status: "Processing Order");
+                        String bookingID =
+                            await firebaseServices.getAndSetCurrentBookingID();
+                        log(bookingID);
+                        firebaseServices.createNewBookingData({
+                          'bookingID': bookingID,
+                          'customerID': _firebaseAuth.currentUser!.uid,
+                          'moviveName': widget.movieDetailsData.title,
+                          'moviePoster': widget.movieDetailsData.poster,
+                          'movieRating': widget.movieDetailsData.imdbRating,
+                          'movieDate':
+                              DateFormat.yMMMEd().format(widget.selectedDate),
+                          "movieTime": widget.selectedTime,
+                          "movieTheaterName":
+                              widget.theatreDetailsData.hallName,
+                          "movieTheaterAddress":
+                              widget.theatreDetailsData.address,
+                          "movieTheaterLat": widget.theatreDetailsData.lat,
+                          "movieTheaterLng": widget.theatreDetailsData.lng,
+                          "numberOfTickets": widget.chairList.length,
+                          "tickets": tickets.substring(2),
+                          "subtotalAmount":
+                              "₹ ${subtotalAmount.toStringAsFixed(2)}",
+                          "conveniemcefees":
+                              "₹ ${convenienceFees.toStringAsFixed(2)}",
+                          "baseAmount": "₹ ${baseAmount.toStringAsFixed(2)}",
+                          "gst": "₹ ${gst.toStringAsFixed(2)}",
+                          "contributionToBookASmile":
+                              "₹ ${bookASmileFees.toStringAsFixed(2)}",
+                          "totalPayable":
+                              "₹ ${totalPayable.toStringAsFixed(2)}",
+                        }).whenComplete(() {
+                          EasyLoading.dismiss();
+
+                          Navigator.pushNamed(context, PaymentSuccessScreen.id,
+                              arguments: [
+                                widget.movieDetailsData,
+                                widget.theatreDetailsData,
+                                widget.selectedDate,
+                                widget.selectedTime,
+                                widget.chairList,
+                                bookingID,
+                              ]);
+                        });
                       }
                     });
                   },
@@ -311,6 +350,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 const MySeparator(
                   height: 1.5,
                   color: ColorPalette.background,
+                  direction: Axis.horizontal,
                 ),
                 SizedBox(
                   height: SizeConfig.heightMultiplier * 10,
@@ -382,6 +422,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: MySeparator(
               height: 1.5,
               color: ColorPalette.background,
+              direction: Axis.horizontal,
             ),
           ),
           Positioned(

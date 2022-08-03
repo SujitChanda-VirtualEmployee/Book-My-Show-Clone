@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../main.dart';
 import '../services/firebaseServices/firebase_services.dart';
 import '../services/providerService/auth_provider.dart';
 import '../services/sharedService/shared_preference_service.dart';
@@ -45,7 +46,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? token;
 
   String? data1;
-
 
   final _formKey = GlobalKey<FormState>();
 
@@ -159,9 +159,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       userEmail: emailId!,
       userPhoto: _myPic!,
     );
-    setState(() {
-      authProvider!.loading = false;
-    });
   }
 
   void _registerUser({String? name, String? emailId}) async {
@@ -172,11 +169,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         name: name,
         emailId: emailId,
       );
+ preferences!.setBool('_userNotificationStatus', true);
       Navigator.pushReplacementNamed(context, InitScreen.id);
     } catch (e) {
-      setState(() {
-        authProvider!.loading = false;
-      });
       // errorSnack(context, e.message);
     }
   }
@@ -190,9 +185,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         if (kDebugMode) {
           print("Username: $_userName \n Email: $_email");
         }
-        setState(() {
-          authProvider!.loading = true;
-        });
+
         _registerUser(name: _userName, emailId: _email);
       } else {
         showAlertDialogForError(
@@ -247,13 +240,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-
   Widget _showUserNameInput() {
     return Padding(
       padding: EdgeInsets.only(top: 05 * SizeConfig.heightMultiplier),
       child: TextFormField(
           onSaved: (val) => _userName = val!.trim(),
           keyboardType: TextInputType.name,
+          autofillHints: const [
+            // AutofillHints.namePrefix,
+              AutofillHints.name,
+            //   AutofillHints.nameSuffix,
+            //    AutofillHints.nickname,
+            //AutofillHints.familyName,
+            //  AutofillHints.givenName,
+          ],
           textCapitalization: TextCapitalization.words,
           validator: (value) => value!.length < 3 ? "UserName too Short" : null,
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -307,6 +307,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           onSaved: (val) => _email = val!.trim().toLowerCase(),
           validator: _emailValidator,
           keyboardType: TextInputType.emailAddress,
+          autofillHints: const [
+            AutofillHints.email,
+          ],
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
               color: ColorPalette.secondary, fontWeight: FontWeight.bold),
           decoration: InputDecoration(
@@ -542,8 +545,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     )
                   ],
                 ),
-                Visibility(
-                    visible: authProvider!.loading, child: glassLoading())
               ],
             ),
           )),

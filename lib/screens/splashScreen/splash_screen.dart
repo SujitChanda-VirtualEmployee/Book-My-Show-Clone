@@ -1,4 +1,3 @@
-
 import 'package:book_my_show_clone/screens/welcomScreen/welcome_screen.dart';
 import 'package:book_my_show_clone/utils/asset_images_strings.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
@@ -6,8 +5,10 @@ import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/firebaseServices/firebase_services.dart';
+import '../../services/providerService/connectivity_provider.dart';
 import '../../services/sharedService/shared_preference_service.dart';
 import '../init_screen.dart';
 import '../registration_screen.dart';
@@ -22,17 +23,14 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   User? user = FirebaseAuth.instance.currentUser;
-  late FirebaseServices _userServices;
- 
 
   @override
   void initState() {
     super.initState();
-
-    _userServices =  FirebaseServices();
+    Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (FirebaseAuth.instance.currentUser != null) {
-        _userServices.getUserById(user!.uid).then((snapShot) {
+        FirebaseServices.getUserById(user!.uid).then((snapShot) {
           if (snapShot.exists) {
             if (kDebugMode) {
               print("UserName :  ${snapShot['name']}");

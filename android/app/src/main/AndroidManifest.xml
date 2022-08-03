@@ -14,6 +14,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
+
+    
    <application
         android:label="Book My Show Clone"
         android:usesCleartextTraffic="true"

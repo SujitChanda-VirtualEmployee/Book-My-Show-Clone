@@ -199,10 +199,10 @@ class FirebaseNotifcation {
           setAsGroupSummary: true,
         );
 
-        NotificationDetails groupNotificationDetailsPlatformSpefics =
-            NotificationDetails(android: groupNotificationDetails);
-        await flutterLocalNotificationplugin.show(
-            0, '', '', groupNotificationDetailsPlatformSpefics);
+        // NotificationDetails groupNotificationDetailsPlatformSpefics =
+        //     NotificationDetails(android: groupNotificationDetails);
+        // await flutterLocalNotificationplugin.show(
+        //     0, '', '', groupNotificationDetailsPlatformSpefics);
       }
     });
   }

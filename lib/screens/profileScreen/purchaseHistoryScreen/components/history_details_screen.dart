@@ -1,170 +1,103 @@
 import 'dart:io';
-import 'package:book_my_show_clone/services/providerService/auth_provider.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../models/hall_details_model.dart';
-import '../../models/movie_details_model.dart';
-import '../../utils/asset_images_strings.dart';
-import '../../utils/color_palette.dart';
-import '../../utils/custom_styles.dart';
-import '../../utils/dashed_line.dart';
-import '../../widgets/customDialog/confirm_dialog.dart';
-import '../landingScreen/landing_screen.dart';
-import '../ticketBookingScreen/ticket_booking_screen.dart';
+import '../../../../models/purchase_history_model.dart';
+import '../../../../utils/asset_images_strings.dart';
+import '../../../../utils/color_palette.dart';
+import '../../../../utils/custom_styles.dart';
+import '../../../../utils/dashed_line.dart';
+import 'package:map_launcher/map_launcher.dart' as map_launcher;
 
-
-
-class PaymentSuccessScreen extends StatefulWidget {
-  static const String id = 'paymentSuccess-screen';
-  final MovieDetailsModel movieDetailsData;
-  final CinemaHallClass theatreDetailsData;
-  final DateTime selectedDate;
-  final String selectedTime;
-  final List<ChairList> chairList;
-  final String orderID;
-  const PaymentSuccessScreen({
+class HistoryDetailsScreen extends StatefulWidget {
+  static const String id = 'historyDetails-screen';
+  final PurchaseHistoryModel model;
+  const HistoryDetailsScreen({
     Key? key,
-    required this.movieDetailsData,
-    required this.theatreDetailsData,
-    required this.selectedDate,
-    required this.selectedTime,
-    required this.chairList,
-    required this.orderID,
+    required this.model,
   }) : super(key: key);
 
   @override
-  State<PaymentSuccessScreen> createState() => _PaymentSuccessScreenState();
+  State<HistoryDetailsScreen> createState() => _HistoryDetailsScreenState();
 }
 
-class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
-  TextEditingController pickupLoc = TextEditingController();
-  TextEditingController dropLoc = TextEditingController();
-  TextEditingController notes = TextEditingController();
-  double subtotalAmount = 0;
-  double totalPayable = 0;
-  double baseAmount = 0;
-  double gst = 0;
-  double convenienceFees = 0;
-  int bookASmileFees = 0;
+class _HistoryDetailsScreenState extends State<HistoryDetailsScreen> {
   ScreenshotController screenshotController = ScreenshotController();
+  void launchMap(
+      {required double lat, required double lng, required String title}) async {
+    final availableMap = await map_launcher.MapLauncher.installedMaps;
 
-  List<String> ticketNumbers = [];
-  @override
-  void initState() {
-    calculateAmount();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => ConfirmDialog.showCustomDialog(context));
-    super.initState();
-  }
-
-  calculateAmount() {
-    for (int i = 0; i < widget.chairList.length; i++) {
-      subtotalAmount = subtotalAmount + widget.chairList[i].price;
-      ticketNumbers.add(widget.chairList[i].id);
-    }
-    gst = (18 / 100) * subtotalAmount;
-    baseAmount = (10 / 100) * subtotalAmount;
-    bookASmileFees = widget.chairList.length;
-    convenienceFees = gst + baseAmount;
-    totalPayable = convenienceFees + subtotalAmount + bookASmileFees;
+    await availableMap.first.showDirections(
+        destination: map_launcher.Coords(lat, lng), destinationTitle: title);
+    // .showMarker(coords: mapLauncher.Coords(lat, lng), title: title);
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        int count = 5;
-        Navigator.of(context).popUntil((_) => count-- <= 0);
-        return Future.value(false);
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: ColorPalette.background,
+      appBar: AppBar(
+        elevation: 0,
         backgroundColor: ColorPalette.background,
-        bottomSheet: SafeArea(
-          child: Container(
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  offset: const Offset(0, -2),
-                  color: ColorPalette.secondary.withOpacity(0.1),
-                  spreadRadius: 0,
-                  blurRadius: 0),
-            ]),
-            height: 60,
-            width: SizeConfig.fullWidth,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-              child: Consumer<AuthProvider>(
-                  builder: (context, dataProvider, child) {
-                return ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: ColorPalette.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, LandingScreen.id, (route) => false);
-                    },
-                    child: Text(
-                      "Continue".toUpperCase(),
-                      style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-                        color: Colors.white,
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.bold,
-                        fontSize: SizeConfig.textMultiplier * 2,
-                      ),
-                    ));
-              }),
-            ),
-          ),
-        ),
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: ColorPalette.background,
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () async {
-                  await screenshotController
-                      .capture(delay: const Duration(milliseconds: 10))
-                      .then((image) async {
-                    if (image != null) {
-                      final dir = await getApplicationDocumentsDirectory();
-                      final imagePath =
-                          await File('${dir.path}/image.png').create();
-                      await imagePath.writeAsBytes(image);
-                      await Share.shareFiles([imagePath.path],
-                          subject: "Movie Ticket",
-                          text: widget.movieDetailsData.title);
-                    }
-                  });
-                },
-                icon: const Icon(Icons.share_outlined))
-          ],
-          titleSpacing: 1,
-          title: Row(
-            children: [
-              Text(
-                "   Ticket Booked   ",
-                style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
-                  color: ColorPalette.secondary,
-                ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: ColorPalette.secondary,
+            )),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await screenshotController
+                    .capture(delay: const Duration(milliseconds: 10))
+                    .then((image) async {
+                  if (image != null) {
+                    final dir = await getApplicationDocumentsDirectory();
+                    final imagePath =
+                        await File('${dir.path}/image.png').create();
+                    await imagePath.writeAsBytes(image);
+                    await Share.shareFiles([imagePath.path],
+                        subject: "Movie Ticket",
+                        text:
+                            "Movie : ${widget.model.moviveName}\n Theatre: ${widget.model.movieTheaterName}\n");
+                  }
+                });
+              },
+              icon: const Icon(EvaIcons.shareOutline,
+                  color: ColorPalette.primary)),
+          IconButton(
+              onPressed: () async {
+                launchMap(
+                    lat: widget.model.movieTheaterLat!,
+                    lng: widget.model.movieTheaterLng!,
+                    title: widget.model.movieTheaterName!);
+              },
+              icon: const Icon(EvaIcons.navigation2Outline,
+                  color: ColorPalette.primary))
+        ],
+        titleSpacing: 1,
+        title: Row(
+          children: [
+            Text(
+              "   Ticket Booked   ",
+              style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
+                color: ColorPalette.secondary,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        body: body(),
       ),
+      body: body(),
     );
   }
 
@@ -226,7 +159,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                 borderRadius:
                                     const BorderRadius.all(Radius.circular(2)),
                                 child: CachedNetworkImage(
-                                  imageUrl: widget.movieDetailsData.poster!,
+                                  imageUrl: widget.model.moviePoster!,
                                   width: MediaQuery.of(context).size.width,
                                   height: double.infinity,
                                   fit: BoxFit.fill,
@@ -257,7 +190,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(widget.movieDetailsData.title!,
+                                  Text(widget.model.moviveName!,
                                       maxLines: 2,
                                       style: CustomStyleClass
                                           .onboardingBodyTextStyle
@@ -274,7 +207,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                         size: 15,
                                       ),
                                       Text(
-                                        " ${(double.parse(widget.movieDetailsData.imdbRating!) * 10).toStringAsFixed(0)}%    ",
+                                        " ${(double.parse(widget.model.movieRating!) * 10).toStringAsFixed(0)}%    ",
                                         style: CustomStyleClass
                                             .onboardingBodyTextStyle
                                             .copyWith(
@@ -287,7 +220,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                     ],
                                   ),
                                   Text(
-                                      "${DateFormat.yMMMEd().format(widget.selectedDate)} | ${widget.selectedTime}",
+                                      "${widget.model.movieDate} | ${widget.model.movieTime}",
                                       style: CustomStyleClass
                                           .onboardingBodyTextStyle
                                           .copyWith(
@@ -295,7 +228,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                               fontSize:
                                                   SizeConfig.textMultiplier *
                                                       1.5)),
-                                  Text(widget.theatreDetailsData.hallName,
+                                  Text(widget.model.movieTheaterName!,
                                       style: CustomStyleClass
                                           .onboardingBodyTextStyle
                                           .copyWith(
@@ -396,7 +329,8 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
           const Center(
             child: MySeparator(
               height: 1.5,
-              color: ColorPalette.background, direction: Axis.horizontal,
+              color: ColorPalette.background,
+              direction: Axis.horizontal,
             ),
           ),
           Positioned(
@@ -445,7 +379,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   image: const AssetImage(AssetImageClass.appLogo),
                   typeNumber: 3,
                   size: 200,
-                  data: widget.orderID,
+                  data: widget.model.bookingId!,
                   errorCorrectLevel: QrErrorCorrectLevel.M,
                   roundEdges: true,
                 ),
@@ -461,7 +395,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
-                        "${widget.chairList.length} Ticket(s)",
+                        "${widget.model.numberOfTickets} Ticket(s)",
                         textAlign: TextAlign.center,
                         style: CustomStyleClass.onboardingBodyTextStyle
                             .copyWith(
@@ -470,7 +404,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                 fontSize: SizeConfig.textMultiplier * 1.8),
                       ),
                       Text(
-                        ticketsId(),
+                        "${widget.model.tickets}",
                         textAlign: TextAlign.center,
                         style: CustomStyleClass.onboardingBodyTextStyle
                             .copyWith(
@@ -479,7 +413,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                 fontSize: SizeConfig.textMultiplier * 1.3),
                       ),
                       Text(
-                        widget.orderID,
+                        widget.model.bookingId!,
                         style: CustomStyleClass.onboardingBodyTextStyle
                             .copyWith(
                                 color: ColorPalette.secondary,
@@ -494,14 +428,6 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
         ),
       ),
     );
-  }
-
-  String ticketsId() {
-    String tickets = "";
-    for (int i = 0; i < ticketNumbers.length; i++) {
-      tickets = "$tickets | ${ticketNumbers[i]}";
-    }
-    return tickets.substring(2);
   }
 
   Widget amountSection() {
@@ -521,7 +447,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   fontSize: SizeConfig.textMultiplier * 1.8),
             ),
             Text(
-              "₹ ${subtotalAmount.toStringAsFixed(2)}",
+              "${widget.model.subtotalAmount}",
               style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
                   color: ColorPalette.secondary,
                   fontSize: SizeConfig.textMultiplier * 1.9),
@@ -550,7 +476,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
               ],
             ),
             Text(
-              "₹ ${convenienceFees.toStringAsFixed(2)}",
+              "${widget.model.conveniemcefees}",
               style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
                   color: ColorPalette.secondary,
                   fontSize: SizeConfig.textMultiplier * 1.8),
@@ -570,7 +496,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   fontSize: SizeConfig.textMultiplier * 1.7),
             ),
             Text(
-              "₹ ${baseAmount.toStringAsFixed(2)}",
+              "${widget.model.baseAmount}",
               style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
                   color: ColorPalette.dark,
                   fontSize: SizeConfig.textMultiplier * 1.7),
@@ -590,7 +516,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   fontSize: SizeConfig.textMultiplier * 1.7),
             ),
             Text(
-              "₹ ${gst.toStringAsFixed(2)}",
+              "${widget.model.gst}",
               style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
                   color: ColorPalette.dark,
                   fontSize: SizeConfig.textMultiplier * 1.7),
@@ -636,7 +562,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
               ],
             ),
             Text(
-              "₹ ${bookASmileFees.toStringAsFixed(2)}",
+              "${widget.model.contributionToBookASmile}",
               style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
                   color: ColorPalette.secondary,
                   fontSize: SizeConfig.textMultiplier * 1.8),
@@ -664,7 +590,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   fontSize: SizeConfig.textMultiplier * 1.8),
             ),
             Text(
-              "₹ ${totalPayable.toStringAsFixed(2)}",
+              "${widget.model.totalPayable}",
               style: CustomStyleClass.onboardingBodyTextStyle.copyWith(
                   color: ColorPalette.secondary,
                   fontWeight: FontWeight.bold,

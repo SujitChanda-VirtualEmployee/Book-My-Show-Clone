@@ -2,14 +2,13 @@ import 'dart:developer';
 import 'package:book_my_show_clone/models/hall_details_model.dart';
 import 'package:book_my_show_clone/models/movie_details_model.dart';
 import 'package:book_my_show_clone/utils/color_palette.dart';
+import 'package:book_my_show_clone/utils/custom_styles.dart';
 import 'package:book_my_show_clone/utils/size_config.dart';
-import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import '../mediaDetailsScreen/components/select_ticket_count.dart';
 import 'components/cinema_hall_tile.dart';
-
-
 
 class SelectMovieHallScreen extends StatefulWidget {
   final MovieDetailsModel movieDetailsData;
@@ -25,6 +24,17 @@ class _SelectMovieHallScreenState extends State<SelectMovieHallScreen> {
   DateTime now = DateTime.now();
   DateTime endDate = DateTime.now();
   DateTime selectedDate = DateTime.now();
+  List<bool> selectedDateIndex = [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+
+  List<DateTime> dateList = [];
 
   selctTicketCountSheet({
     required BuildContext context,
@@ -55,9 +65,16 @@ class _SelectMovieHallScreenState extends State<SelectMovieHallScreen> {
     });
   }
 
+  getDateList() {
+    for (int i = 0; i < 7; i++) {
+      dateList.add(now.add(Duration(days: i)));
+    }
+  }
+
   @override
   void initState() {
-    endDate = now.add(const Duration(days: 15));
+    // endDate = now.add(const Duration(days: 15));
+    getDateList();
     super.initState();
   }
 
@@ -90,30 +107,96 @@ class _SelectMovieHallScreenState extends State<SelectMovieHallScreen> {
   Widget body() {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.only(bottom: 10),
-          color: Colors.white,
-          child: CalendarTimeline(
-            initialDate: DateTime(
-              now.year,
-              now.month,
-              now.day,
-            ),
-            firstDate: DateTime(now.year, now.month, now.day),
-            lastDate: DateTime(endDate.year, endDate.month, endDate.day),
-            onDateSelected: (date) {
-              selectedDate = date;
+        SizedBox(
+          height: SizeConfig.heightMultiplier * 100,
+          width: SizeConfig.fullWidth,
+          child: ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemCount: 7,
+            itemBuilder: (BuildContext context, int index) {
+              return InkWell(
+                onTap: () {
+                  selectedDateIndex.clear();
+                  for (int i = 0; i < 7; i++) {
+                    if (i == index) {
+                      selectedDateIndex.add(true);
+                      selectedDate = dateList[index];
+                    } else {
+                      selectedDateIndex.add(false);
+                      log("Sujit Chanda False");
+                    }
+                  }
+                  setState(() {});
+                  log(selectedDate.toString());
+                },
+                child: Container(
+                  width: SizeConfig.fullWidth / 7,
+                  height: double.infinity,
+                  color: selectedDateIndex[index] == true
+                      ? ColorPalette.primary
+                      : ColorPalette.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        DateFormat.E().format(dateList[index]).toUpperCase(),
+                        style: CustomStyleClass.onboardingBodyTextStyle
+                            .copyWith(
+                                color: selectedDateIndex[index] == true
+                                    ? ColorPalette.white
+                                    : ColorPalette.secondary,
+                                fontSize: SizeConfig.textMultiplier * 1.5),
+                      ),
+                      Text(DateFormat.d().format(dateList[index]).toUpperCase(),
+                          style:
+                              CustomStyleClass.onboardingBodyTextStyle.copyWith(
+                            color: selectedDateIndex[index] == true
+                                ? ColorPalette.white
+                                : ColorPalette.secondary,
+                          )),
+                      Text(
+                          DateFormat.MMM()
+                              .format(dateList[index])
+                              .toUpperCase(),
+                          style: CustomStyleClass.onboardingBodyTextStyle
+                              .copyWith(
+                                  color: selectedDateIndex[index] == true
+                                      ? ColorPalette.white
+                                      : ColorPalette.secondary,
+                                  fontSize: SizeConfig.textMultiplier * 1.5)),
+                    ],
+                  ),
+                ),
+              );
             },
-            leftMargin: 10,
-            monthColor: ColorPalette.secondary,
-            dayColor: ColorPalette.dark,
-            activeDayColor: ColorPalette.white,
-            activeBackgroundDayColor: ColorPalette.primary,
-            dotsColor: ColorPalette.white,
-            //  selectableDayPredicate: (date) => date.day != 23,
-            locale: 'en_ISO',
           ),
         ),
+        // Container(
+        //   padding: const EdgeInsets.only(bottom: 10),
+        //   color: Colors.white,
+        //   child: CalendarTimeline(
+        //     initialDate: DateTime(
+        //       now.year,
+        //       now.month,
+        //       now.day,
+        //     ),
+        //     firstDate: DateTime(now.year, now.month, now.day),
+        //     lastDate: DateTime(endDate.year, endDate.month, endDate.day),
+        //     onDateSelected: (date) {
+        //       selectedDate = date;
+        //     },
+        //     leftMargin: 10,
+        //     monthColor: ColorPalette.secondary,
+        //     dayColor: ColorPalette.dark,
+        //     activeDayColor: ColorPalette.white,
+        //     activeBackgroundDayColor: ColorPalette.primary,
+        //     dotsColor: ColorPalette.white,
+        //     //  selectableDayPredicate: (date) => date.day != 23,
+        //     locale: 'en_ISO',
+        //   ),
+        // ),
         const Divider(
           thickness: 1,
           height: 0,
